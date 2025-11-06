@@ -10,10 +10,19 @@ import { TwitterIntegration, WebhookIntegration } from '../integrations/twitter'
 import { ClaudeContextGenerator } from '../integrations/claude';
 import { Env, CommitRequest, RollbackRequest } from '../types';
 
-const app = new Hono<{ Bindings: Env }>();
+type Bindings = Env & { [key: string]: any };
+const app = new Hono<{ Bindings: Bindings }>();
 
 // Enable CORS
 app.use('/*', cors());
+
+// Helper to safely get env
+function getEnv(c: any): Env {
+  if (!c.env) {
+    throw new Error('Environment not configured');
+  }
+  return c.env as Env;
+}
 
 // Health check
 app.get('/health', (c) => {
@@ -35,7 +44,7 @@ app.get('/health', (c) => {
 app.post('/api/context/commit', async (c) => {
   try {
     const request: CommitRequest = await c.req.json();
-    const env = c.env;
+    const env = getEnv(c);
 
     // Validate request
     if (!request.user_id || !request.commit_message || !request.changes) {
@@ -75,7 +84,8 @@ app.get('/api/context/current', async (c) => {
       return c.json({ error: 'user_id is required' }, 400);
     }
 
-    const versionControl = new VersionControlEngine(c.env, userId);
+    const env = getEnv(c);
+    const versionControl = new VersionControlEngine(env, userId);
     const currentVersion = await versionControl.getCurrentVersion();
 
     if (!currentVersion) {
@@ -129,7 +139,8 @@ app.get('/api/context/history', async (c) => {
       return c.json({ error: 'user_id is required' }, 400);
     }
 
-    const versionControl = new VersionControlEngine(c.env, userId);
+    const env = getEnv(c);
+    const versionControl = new VersionControlEngine(env, userId);
     const history = await versionControl.getHistory(limit, offset);
 
     return c.json({
@@ -168,7 +179,8 @@ app.post('/api/context/rollback', async (c) => {
       return c.json({ error: 'Missing required fields' }, 400);
     }
 
-    const versionControl = new VersionControlEngine(c.env, request.user_id);
+    const env = getEnv(c);
+    const versionControl = new VersionControlEngine(env, request.user_id);
     const newVersion = await versionControl.rollback(request);
 
     return c.json({
@@ -204,7 +216,8 @@ app.get('/api/context/diff/:from/:to', async (c) => {
       return c.json({ error: 'user_id is required' }, 400);
     }
 
-    const versionControl = new VersionControlEngine(c.env, userId);
+    const env = getEnv(c);
+    const versionControl = new VersionControlEngine(env, userId);
     const diff = await versionControl.diff(versionFrom, versionTo);
 
     return c.json({
@@ -245,7 +258,8 @@ app.get('/api/context/at/:date', async (c) => {
       return c.json({ error: 'Invalid date format' }, 400);
     }
 
-    const versionControl = new VersionControlEngine(c.env, userId);
+    const env = getEnv(c);
+    const versionControl = new VersionControlEngine(env, userId);
     const state = await versionControl.getStateAtTime(timestamp);
 
     if (!state) {
@@ -294,7 +308,8 @@ app.get('/api/context/field/:name/history', async (c) => {
       end: new Date(endDate)
     } : undefined;
 
-    const versionControl = new VersionControlEngine(c.env, userId);
+    const env = getEnv(c);
+    const versionControl = new VersionControlEngine(env, userId);
     const history = await versionControl.getFieldHistory(fieldName, timeRange);
 
     return c.json({
@@ -335,7 +350,8 @@ app.get('/api/context/claude-prompt', async (c) => {
       return c.json({ error: 'user_id is required' }, 400);
     }
 
-    const claudeGen = new ClaudeContextGenerator(c.env);
+    const env = getEnv(c);
+    const claudeGen = new ClaudeContextGenerator(env);
     const context = await claudeGen.generateContext(userId, { format });
 
     return c.text(context.formatted_content, 200, {
@@ -363,11 +379,12 @@ app.post('/api/context/update-from-chat', async (c) => {
       return c.json({ error: 'Missing required fields' }, 400);
     }
 
-    const claudeGen = new ClaudeContextGenerator(c.env);
+    const env = getEnv(c);
+    const claudeGen = new ClaudeContextGenerator(env);
     const changes = await claudeGen.extractChangesFromConversation(
       conversation_id,
       messages,
-      c.env.CLAUDE_API_KEY
+      env.CLAUDE_API_KEY
     );
 
     if (changes.length === 0) {
@@ -380,7 +397,8 @@ app.post('/api/context/update-from-chat', async (c) => {
     const highConfidenceChanges = changes.filter(ch => ch.confidence >= 0.8);
 
     if (highConfidenceChanges.length > 0) {
-      const versionControl = new VersionControlEngine(c.env, user_id);
+      const env = getEnv(c);
+      const versionControl = new VersionControlEngine(env, user_id);
       const version = await versionControl.commit({
         user_id,
         commit_message: `Auto-update from Claude conversation ${conversation_id}`,
@@ -436,20 +454,20 @@ app.post('/api/integrations/twitter/sync', async (c) => {
       return c.json({ error: 'Missing required fields' }, 400);
     }
 
-    const twitter = new TwitterIntegration(c.env);
+    const env = getEnv(c);
+    const twitter = new TwitterIntegration(env);
     const result = await twitter.syncFollowerData(username);
 
     // Auto-commit if threshold is met
     if (result.success && auto_commit_threshold) {
-      const versionControl = new VersionControlEngine(c.env, user_id);
+      const env = getEnv(c);
+      const versionControl = new VersionControlEngine(env, user_id);
       const currentVersion = await versionControl.getCurrentVersion();
 
       if (currentVersion) {
-        const currentState = await versionControl.getVersionState(currentVersion.id);
-        const previousCount = currentState['twitter_follower_count']?.field_value || 0;
-
         // This would normally get the new count from the sync result
         // For now, we'll skip the auto-commit logic
+        // const currentState = await versionControl.getVersionState(currentVersion.id);
       }
     }
 
@@ -477,7 +495,8 @@ app.post('/api/integrations/webhook/:source', async (c) => {
     // Validate webhook signature if provided
     if (signature) {
       const webhook = new WebhookIntegration();
-      const secret = c.env[`WEBHOOK_SECRET_${source.toUpperCase()}`];
+      const env = getEnv(c);
+      const secret = (env as any)[`WEBHOOK_SECRET_${source.toUpperCase()}`] as string | undefined;
 
       if (secret) {
         const isValid = webhook.validateSignature(
@@ -519,7 +538,8 @@ app.get('/api/stats', async (c) => {
       return c.json({ error: 'user_id is required' }, 400);
     }
 
-    const versionControl = new VersionControlEngine(c.env, userId);
+    const env = getEnv(c);
+    const versionControl = new VersionControlEngine(env, userId);
     const stats = await versionControl.getStats();
 
     return c.json(stats);

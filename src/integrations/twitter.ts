@@ -17,7 +17,6 @@ export class TwitterIntegration {
    * Sync Twitter follower count and profile data
    */
   async syncFollowerData(username: string): Promise<SyncResult> {
-    const startTime = Date.now();
 
     try {
       // Get user data from Twitter API v2
@@ -81,14 +80,14 @@ export class TwitterIntegration {
       throw new Error(`Twitter API error: ${response.status} - ${error}`);
     }
 
-    const data = await response.json();
+    const data = await response.json() as { data: any };
     return data.data;
   }
 
   /**
    * Get follower growth over time
    */
-  async getFollowerGrowth(username: string, days: number = 30): Promise<{
+  async getFollowerGrowth(username: string, _days: number = 30): Promise<{
     current: number;
     growth: number;
     daily_average: number;
@@ -148,7 +147,7 @@ export class TwitterIntegration {
         throw new Error(`Failed to fetch tweets: ${response.status}`);
       }
 
-      const data = await response.json();
+      const data = await response.json() as { data: any[] | undefined };
       const tweets = data.data || [];
 
       if (tweets.length === 0) {
@@ -191,13 +190,11 @@ export class TwitterIntegration {
  * LinkedIn Integration (placeholder - requires OAuth)
  */
 export class LinkedInIntegration {
-  private accessToken: string;
-
-  constructor(accessToken: string) {
-    this.accessToken = accessToken;
+  constructor(_accessToken: string) {
+    // LinkedIn integration placeholder
   }
 
-  async syncFollowerData(profileId: string): Promise<SyncResult> {
+  async syncFollowerData(_profileId: string): Promise<SyncResult> {
     // LinkedIn API integration would go here
     // Requires OAuth 2.0 authentication
     return {

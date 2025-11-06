@@ -15,7 +15,7 @@ export default {
    * Scheduled handler for automated sync tasks
    * Runs every hour to sync API data
    */
-  async scheduled(event: ScheduledEvent, env: Env, ctx: ExecutionContext): Promise<void> {
+  async scheduled(_event: ScheduledEvent, env: Env, _ctx: ExecutionContext): Promise<void> {
     console.log('Running scheduled sync tasks...');
 
     try {
@@ -63,7 +63,6 @@ export default {
 async function processSyncTask(sync: any, env: Env, supabase: any): Promise<void> {
   const startTime = Date.now();
   const { TwitterIntegration } = await import('./integrations/twitter');
-  const { VersionControlEngine } = await import('./core/version-control');
 
   try {
     let result;

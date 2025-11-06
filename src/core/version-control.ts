@@ -270,8 +270,9 @@ export class VersionControlEngine {
 
     if (error) throw new Error(`Failed to calculate diff: ${error.message}`);
 
-    const versionFrom = await this.getVersionById(versionFromId);
-    const versionTo = await this.getVersionById(versionToId);
+    // Validate versions exist (unused but kept for validation)
+    await this.getVersionById(versionFromId);
+    await this.getVersionById(versionToId);
 
     return {
       version_from: versionFromId,

@@ -4,7 +4,7 @@
  */
 
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
-import { Env, ClaudeContext, BusinessState } from '../types';
+import { Env, ClaudeContext } from '../types';
 
 export class ClaudeContextGenerator {
   private supabase: SupabaseClient;
@@ -324,7 +324,7 @@ export class ClaudeContextGenerator {
    * Uses Claude API to analyze conversation and extract structured updates
    */
   async extractChangesFromConversation(
-    conversationId: string,
+    _conversationId: string,
     messages: Array<{ role: string; content: string }>,
     claudeApiKey: string
   ): Promise<Array<{
@@ -383,7 +383,7 @@ Set confidence between 0-1 based on how clear the change was.
         throw new Error(`Claude API error: ${response.status}`);
       }
 
-      const result = await response.json();
+      const result = await response.json() as { content: Array<{ text: string }> };
       const extractedText = result.content[0].text;
 
       // Parse JSON from response
