@@ -1,0 +1,47 @@
+# Cursor Rules - Bug Fixing Standard Operating Procedure
+
+## CRITICAL: Bug Fixing Protocol
+
+When fixing a bug, you MUST follow this exact sequence:
+
+1. **Identify the root cause**
+   - Analyze the error message, stack trace, and related code
+   - Trace the issue to its source
+   - Understand why the bug exists, not just what's broken
+
+2. **Implement the fix**
+   - Make the minimal necessary changes to resolve the root cause
+   - Ensure the fix addresses the underlying issue, not just symptoms
+   - Follow existing code patterns and conventions
+
+3. **Verify with linting**
+   - Run linter checks on modified files
+   - Fix any linting errors or warnings
+   - Ensure code quality standards are met
+
+4. **End with summary**
+   - ALWAYS end your response with a simple one-sentence summary
+   - Use exactly 3 alarm emojis (🚨🚨🚨)
+   - This summary must be the very last sentence in your response
+   - Format: `🚨🚨🚨 [One sentence describing what was fixed]`
+
+## Example
+
+```
+Root cause: The API endpoint was only returning partial metadata, missing GitHub info.
+
+Fix: Updated the SQL query to select full metadata field and parse it properly, including GitHub publish information in the response.
+
+Linting: ✅ No errors
+
+🚨🚨🚨 Fixed skills library viewing by updating backend to return full metadata with GitHub info and adding type aliases for frontend compatibility.
+```
+
+## Additional Guidelines
+
+- Always check for existing similar fixes before implementing
+- Test the fix in context, not just in isolation
+- Consider edge cases and error handling
+- Document non-obvious fixes with comments
+- Update related tests if they exist
+

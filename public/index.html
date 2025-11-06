@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Context Version Control - Git for Business Context</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Header -->
+    <header class="header">
+      <div class="header-content">
+        <div class="logo">
+          <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+            <path d="M16 4L28 10V22L16 28L4 22V10L16 4Z" stroke="currentColor" stroke-width="2" fill="none"/>
+            <path d="M16 12L22 15V21L16 24L10 21V15L16 12Z" fill="currentColor"/>
+          </svg>
+          <h1>Context Version Control</h1>
+        </div>
+        <div class="header-actions">
+          <button class="btn btn-secondary" id="sync-btn">
+            <span class="icon">🔄</span> Sync Now
+          </button>
+          <button class="btn btn-primary" id="commit-btn">
+            <span class="icon">✓</span> New Commit
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <nav class="nav">
+          <a href="#current" class="nav-item active" data-tab="current">
+            <span class="icon">📊</span> Current State
+          </a>
+          <a href="#history" class="nav-item" data-tab="history">
+            <span class="icon">📜</span> Version History
+          </a>
+          <a href="#temporal" class="nav-item" data-tab="temporal">
+            <span class="icon">⏰</span> Time Travel
+          </a>
+          <a href="#integrations" class="nav-item" data-tab="integrations">
+            <span class="icon">🔌</span> Integrations
+          </a>
+          <a href="#claude" class="nav-item" data-tab="claude">
+            <span class="icon">🤖</span> Claude Context
+          </a>
+          <a href="#stats" class="nav-item" data-tab="stats">
+            <span class="icon">📈</span> Statistics
+          </a>
+        </nav>
+
+        <div class="sidebar-footer">
+          <div class="user-info">
+            <div class="user-avatar">E</div>
+            <div class="user-details">
+              <div class="user-name">Entelech User</div>
+              <div class="user-status">Active</div>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Content Area -->
+      <div class="content-area">
+        <!-- Current State Tab -->
+        <div id="current-tab" class="tab-content active">
+          <div class="tab-header">
+            <h2>Current Business State</h2>
+            <p class="subtitle">Your active context version</p>
+          </div>
+
+          <div class="version-card">
+            <div class="version-header">
+              <div class="version-info">
+                <span class="version-hash" id="current-hash">Loading...</span>
+                <span class="version-date" id="current-date"></span>
+              </div>
+              <span class="badge badge-success">Current</span>
+            </div>
+            <div class="version-message" id="current-message">Loading current state...</div>
+          </div>
+
+          <div class="fields-grid" id="current-fields">
+            <!-- Fields will be loaded here -->
+          </div>
+        </div>
+
+        <!-- Version History Tab -->
+        <div id="history-tab" class="tab-content">
+          <div class="tab-header">
+            <h2>Version History</h2>
+            <p class="subtitle">All context commits</p>
+          </div>
+
+          <div class="timeline" id="version-timeline">
+            <!-- Timeline items will be loaded here -->
+          </div>
+        </div>
+
+        <!-- Temporal Query Tab -->
+        <div id="temporal-tab" class="tab-content">
+          <div class="tab-header">
+            <h2>Time Travel</h2>
+            <p class="subtitle">View context at any point in time</p>
+          </div>
+
+          <div class="temporal-query-form">
+            <label for="date-picker">Select Date:</label>
+            <input type="datetime-local" id="date-picker" class="date-input">
+            <button class="btn btn-primary" id="query-btn">Query State</button>
+          </div>
+
+          <div class="temporal-result" id="temporal-result">
+            <!-- Query results will appear here -->
+          </div>
+        </div>
+
+        <!-- Integrations Tab -->
+        <div id="integrations-tab" class="tab-content">
+          <div class="tab-header">
+            <h2>API Integrations</h2>
+            <p class="subtitle">Automated data sync sources</p>
+          </div>
+
+          <div class="integrations-grid">
+            <div class="integration-card">
+              <div class="integration-icon">🐦</div>
+              <h3>Twitter</h3>
+              <p>Follower count & engagement metrics</p>
+              <div class="integration-status">
+                <span class="status-dot status-active"></span>
+                <span>Active</span>
+              </div>
+              <button class="btn btn-secondary btn-sm">Configure</button>
+            </div>
+
+            <div class="integration-card">
+              <div class="integration-icon">💼</div>
+              <h3>LinkedIn</h3>
+              <p>Professional network metrics</p>
+              <div class="integration-status">
+                <span class="status-dot status-inactive"></span>
+                <span>Inactive</span>
+              </div>
+              <button class="btn btn-secondary btn-sm">Configure</button>
+            </div>
+
+            <div class="integration-card">
+              <div class="integration-icon">🔗</div>
+              <h3>Webhook</h3>
+              <p>Custom data sources</p>
+              <div class="integration-status">
+                <span class="status-dot status-active"></span>
+                <span>Active</span>
+              </div>
+              <button class="btn btn-secondary btn-sm">Configure</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Claude Context Tab -->
+        <div id="claude-tab" class="tab-content">
+          <div class="tab-header">
+            <h2>Claude Context</h2>
+            <p class="subtitle">Dynamic context for Claude API</p>
+          </div>
+
+          <div class="context-preview" id="claude-context">
+            <pre><code id="claude-context-code">Loading...</code></pre>
+          </div>
+
+          <div class="context-actions">
+            <button class="btn btn-secondary" id="copy-context-btn">
+              <span class="icon">📋</span> Copy to Clipboard
+            </button>
+            <button class="btn btn-secondary" id="refresh-context-btn">
+              <span class="icon">🔄</span> Refresh
+            </button>
+            <select class="format-select" id="format-select">
+              <option value="markdown">Markdown</option>
+              <option value="json">JSON</option>
+              <option value="yaml">YAML</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Statistics Tab -->
+        <div id="stats-tab" class="tab-content">
+          <div class="tab-header">
+            <h2>Statistics</h2>
+            <p class="subtitle">Context evolution analytics</p>
+          </div>
+
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-value" id="total-versions">0</div>
+              <div class="stat-label">Total Versions</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value" id="total-changes">0</div>
+              <div class="stat-label">Total Changes</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value" id="most-changed">-</div>
+              <div class="stat-label">Most Changed Field</div>
+            </div>
+          </div>
+
+          <div class="activity-chart" id="activity-chart">
+            <!-- Chart will be rendered here -->
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Commit Modal -->
+  <div id="commit-modal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Create New Commit</h3>
+        <button class="modal-close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <label for="commit-message">Commit Message:</label>
+        <textarea id="commit-message" class="commit-message-input" placeholder="Describe what changed..."></textarea>
+
+        <label>Changes:</label>
+        <div id="changes-list" class="changes-list">
+          <!-- Dynamic fields will be added here -->
+        </div>
+
+        <button class="btn btn-secondary btn-sm" id="add-change-btn">+ Add Field</button>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="cancel-commit-btn">Cancel</button>
+        <button class="btn btn-primary" id="submit-commit-btn">Commit</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/app.js"></script>
+</body>
+</html>
