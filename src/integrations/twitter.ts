@@ -4,6 +4,7 @@
  */
 
 import { Env, SyncResult } from '../types';
+import * as crypto from 'node:crypto';
 
 export class TwitterIntegration {
   private bearerToken: string;
@@ -261,15 +262,20 @@ export class WebhookIntegration {
     signature: string,
     secret: string
   ): boolean {
-    const crypto = require('crypto');
-    const expectedSignature = crypto
-      .createHmac('sha256', secret)
-      .update(payload)
-      .digest('hex');
+    try {
+      const expectedSignature = crypto
+        .createHmac('sha256', secret)
+        .update(payload)
+        .digest('hex');
 
-    return crypto.timingSafeEqual(
-      Buffer.from(signature),
-      Buffer.from(expectedSignature)
-    );
+      // Convert hex strings to buffers for comparison
+      const signatureBuf = Buffer.from(signature, 'hex');
+      const expectedBuf = Buffer.from(expectedSignature, 'hex');
+      
+      return crypto.timingSafeEqual(signatureBuf, expectedBuf);
+    } catch (error) {
+      console.error('Signature validation error:', error);
+      return false;
+    }
   }
 }

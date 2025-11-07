@@ -3,7 +3,7 @@
  * Git-like versioning system for business context
  */
 import { createClient } from '@supabase/supabase-js';
-import * as crypto from 'crypto';
+import * as crypto from 'node:crypto';
 export class VersionControlEngine {
     constructor(env, userId) {
         this.supabase = createClient(env.SUPABASE_URL, env.SUPABASE_SERVICE_KEY);

@@ -2,6 +2,7 @@
  * Twitter API Integration
  * Auto-syncs follower counts and profile data
  */
+import * as crypto from 'node:crypto';
 export class TwitterIntegration {
     constructor(env) {
         this.baseUrl = 'https://api.twitter.com/2';
@@ -208,11 +209,19 @@ export class WebhookIntegration {
      * Validate webhook signature (for security)
      */
     validateSignature(payload, signature, secret) {
-        const crypto = require('crypto');
-        const expectedSignature = crypto
-            .createHmac('sha256', secret)
-            .update(payload)
-            .digest('hex');
-        return crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(expectedSignature));
+        try {
+            const expectedSignature = crypto
+                .createHmac('sha256', secret)
+                .update(payload)
+                .digest('hex');
+            // Convert hex strings to buffers for comparison
+            const signatureBuf = Buffer.from(signature, 'hex');
+            const expectedBuf = Buffer.from(expectedSignature, 'hex');
+            return crypto.timingSafeEqual(signatureBuf, expectedBuf);
+        }
+        catch (error) {
+            console.error('Signature validation error:', error);
+            return false;
+        }
     }
 }

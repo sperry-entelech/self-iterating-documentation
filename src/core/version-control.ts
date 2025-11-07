@@ -4,7 +4,7 @@
  */
 
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
-import * as crypto from 'crypto';
+import * as crypto from 'node:crypto';
 import {
   ContextVersion,
   BusinessStateField,
