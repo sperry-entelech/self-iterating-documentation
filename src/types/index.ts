@@ -170,6 +170,6 @@ export interface Env {
   SUPABASE_SERVICE_KEY: string;
   TWITTER_BEARER_TOKEN: string;
   CLAUDE_API_KEY: string;
-  CONTEXT_CACHE: KVNamespace;
+  CONTEXT_CACHE?: KVNamespace; // Optional - caching is done via Supabase
   ENVIRONMENT: string;
 }

@@ -1,7 +1,7 @@
-name = "context-version-control"
+name = "temporal-intelligence"
 main = "src/index.ts"
 compatibility_date = "2024-01-01"
-node_compat = true
+compatibility_flags = ["nodejs_compat"]
 
 [vars]
 ENVIRONMENT = "development"
@@ -12,16 +12,11 @@ ENVIRONMENT = "development"
 # TWITTER_BEARER_TOKEN
 # CLAUDE_API_KEY
 
-[[kv_namespaces]]
-binding = "CONTEXT_CACHE"
-id = "context_cache_dev"
+# KV namespace removed - caching is done via Supabase database
+# If you need KV in the future, create it first with: wrangler kv:namespace create "CONTEXT_CACHE"
 
 [build]
 command = "npm run build"
 
 [env.production]
 vars = { ENVIRONMENT = "production" }
-
-[[env.production.kv_namespaces]]
-binding = "CONTEXT_CACHE"
-id = "context_cache_prod"
